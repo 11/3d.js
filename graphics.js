@@ -8,7 +8,7 @@ function drawLine(x1, y1, x2, y2){
     var diff_y = y2 - y1;
     var slope = diff_x / diff_y;
 
-    // the amount of steps is defined hte the longest difference in either dimension
+    // the amount of steps is defined by the longest difference in either the x or y dimension
     var steps = (Math.abs(diff_x) > Math.abs(diff_y) ? Math.abs(diff_x) : Math.abs(diff_y));
 
     // x and y increment
@@ -29,7 +29,9 @@ function drawLine(x1, y1, x2, y2){
     }
 }
 
-// puts pixel in texture buffer at the correct coordinate
+/**
+ * Puts pixel in texture buffer at the correct coordinate
+ */
 function putPixel(x, y){
     ctx.beginPath();
     ctx.fillStyle = "white";
