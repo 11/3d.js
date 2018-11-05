@@ -8,7 +8,7 @@ class Vector2{
     /**
      * Static vector addition function that returns a new vector
      */
-    static add(vec1, vec2){
+    static plus(vec1, vec2){
         var x = vec1.x + vec2.x;
         var y = vec1.y + vec2.y;
         return new Vector2(x, y);
@@ -17,7 +17,7 @@ class Vector2{
     /**
      * Static vector subtraction function that returns a new vector
      */
-    static subtract(vec1, vec2){
+    static minus(vec1, vec2){
         var x = vec1.x - vec2.x;
         var y = vec1.y - vec2.y;
         return new Vector2(x, y);
@@ -36,18 +36,18 @@ class Vector2{
     /**
      * Static vector cross product function that returns a new vector
      */
-    static cross(vec1, vec2){
+    static times(vec1, vec2){
         var u = vec1.x * vec2.y;
-        var v = vec1.u * vec2.x;
+        var v = vec1.y * vec2.x;
 
-        return u-v
+        return new Vector2(u, v);
     }
 
     /**
      * Generic addition function that adds one vector into the other
      * The goal of this function is to act as the += operator
      */
-    plus(vec2){
+    add(vec2){
         this.x += vec2.x;
         this.y += vec2.y;
     }
@@ -56,9 +56,17 @@ class Vector2{
      * Generic addition function that adds one vector into the other
      * The goal of this function is to act as the += operator
      */
-    minus(vec2){
+    subtract(vec2){
         this.x -= vec2.x;
         this.y -= vec2.y;
+    }
+
+    cross(vec1, vec2){
+        var u = this.x * vec2.y;
+        var v = this.y * vec2.x;
+
+        this.x = u;
+        this.y = y;
     }
 
 }
