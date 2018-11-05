@@ -5,7 +5,7 @@ class Colors{
     }
 
     static get PINK(){
-        return "#E50053;";
+        return "#E50053";
     }
 
     static get ORANGE(){
