@@ -27,12 +27,20 @@ class Vector2{
      * Static vector dot product function that returns a new vector
      */
     static dot(vec1, vec2){
+        var u = vec1.x * vec2.x;
+        var v = vec1.y * vec2.y;
+
+        return x + y;
     }
 
     /**
      * Static vector cross product function that returns a new vector
      */
     static cross(vec1, vec2){
+        var u = vec1.x * vec2.y;
+        var v = vec1.u * vec2.x;
+
+        return u-v
     }
 
     /**
@@ -52,18 +60,5 @@ class Vector2{
         this.x -= vec2.x;
         this.y -= vec2.y;
     }
-
-    dot(){
-
-    }
-
-    cross(){
-
-    }
-
-    length(){
-
-    }
-
 
 }
