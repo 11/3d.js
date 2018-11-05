@@ -10,6 +10,7 @@ function loadScript(script){
 
 
 window.onload = function(){
+    loadScript('colors.js')
     loadScript('graphics.js');
     loadScript('main.js');
 }
