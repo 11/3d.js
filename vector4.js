@@ -1,9 +1,10 @@
-class Vector3{
+class Vector4{
 
-    constructor(x, y, z){
+    constructor(x, y, z, w){
         this.x = x;
         this.y = y;
         this.z = z;
+        this.w = w;
     }
 
     /**
@@ -13,7 +14,8 @@ class Vector3{
         var x = vec1.x + vec2.x;
         var y = vec1.y + vec2.y;
         var z = vec1.z + vec2.z;
-        return new Vector3(x, y, z);
+        var w = vec1.w + vec2.w
+        return new Vector3(x, y, z, w);
     }
 
     /**
@@ -24,7 +26,8 @@ class Vector3{
         var x = vec1.x - vec2.x;
         var y = vec1.y - vec2.y;
         var z = vec1.z - vec2.z;
-        return new Vector3(x, y, z);
+        var w = vec1.w - vec2.w;
+        return new Vector3(x, y, z, w);
     }
 
     /**
@@ -34,19 +37,20 @@ class Vector3{
         var x = vec1.x * vec2.x;
         var y = vec1.y * vec2.y;
         var z = vec1.z * vec2.z;
+        var w = vec1.w * vec2.w;
 
-        return x + y + z;
+        return x + y + z + w;
     }
 
     /**
      * Static vector cross product function that returns a new vector
      */
     static times(vec1, vec2){
-        var x = (vec1.y * vec2.z) - (vec1.z * vec2.y);
-        var y = (vec1.z * vec2.x) - (vec1.x * vec2.z);
-        var z = (vec1.x * vec2.y) - (vec1.y * vec2.x);
+        var u = (vec1.y * vec2.z) - (vec1.z * vec2.y);
+        var v = (vec1.z * vec2.x) - (vec1.x * vec2.z);
+        var w = (vec1.x * vec2.y) - (vec1.y * vec2.x);
 
-        return new Vector3(x, y, z);
+        return new Vector3(u,v,w);
     }
 
     /**
@@ -57,6 +61,7 @@ class Vector3{
         this.x += vec2.x;
         this.y += vec2.y;
         this.z += vec2.z;
+        this.w += vec2.w;
     }
 
     /**
@@ -67,18 +72,16 @@ class Vector3{
         this.x -= vec2.x;
         this.y -= vec2.y;
         this.z -= vec2.z;
+        this.w -= vec2.w;
     }
 
     /**
      * Converts the current instance of a Vector3 to the cross product of another Vector3
      */
     cross(vec2){
-        var u = (this.y * vec2.z) - (this.z * vec2.y);
-        var v = (this.z * vec2.x) - (this.x * vec2.z);
-        var w = (this.x * vec2.y) - (this.y * vec2.x);
-
-        this.x = u;
-        this.y = v;
-        this.z = w;
+        this.x = (this.y * vec2.z) - (this.z * vec2.y);
+        this.y = (this.z * vec2.x) - (this.x * vec2.z);
+        this.z = (this.x * vec2.y) - (this.y * vec2.x);
     }
+
 }
