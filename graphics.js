@@ -29,6 +29,7 @@ function drawLine(x1, y1, x2, y2){
     }
 }
 
+
 /**
  * Puts pixel in texture buffer at the correct coordinate
  */
