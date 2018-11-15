@@ -8,12 +8,13 @@ function loadScript(script){
     headTag.appendChild(newScript)
 }
 
-
+// load these JS files on window.onload
 window.onload = function(){
     loadScript('colors.js')
-    loadScript('vector.js');
+    loadScript('vector2.js');
+    loadScript('vector3.js');
     loadScript('matrix.js');
-    loadScript('main.js');
     loadScript('graphics.js');
     loadScript('main.js');
 }
+

@@ -1,9 +1,15 @@
 /**
- * DDA Line Drawing Algorithm
- * Can upgrade to bresenham in situations where slope isn't negative.
+ * dda line drawing algorithm
+ * can upgrade to bresenham in situations where slope isn't negative.
  */
-function drawLine(x1, y1, x2, y2){
-    // Difference in x & y
+function drawLine(vec2A, vec2B){
+    // map vector coordinates to x1, y1, x2, y2
+    let x1 = vec2A.x;
+    let y1 = vec2A.y;
+    let x2 = vec2B.x;
+    let y2 = vec2B.y;
+
+    // difference in x & y
     var diff_x = x2 - x1;
     var diff_y = y2 - y1;
     var slope = diff_x / diff_y;
@@ -12,8 +18,8 @@ function drawLine(x1, y1, x2, y2){
     var steps = (Math.abs(diff_x) > Math.abs(diff_y) ? Math.abs(diff_x) : Math.abs(diff_y));
 
     // x and y increment
-    var xInc = diff_x / steps;
-    var yInc = diff_y / steps
+    var xinc = diff_x / steps;
+    var yinc = diff_y / steps
 
     // x and y values that are incremented until the line is drawn
     var x = x1;
@@ -23,11 +29,12 @@ function drawLine(x1, y1, x2, y2){
         putPixel(x, y);
 
         // increment x & y
-        // This will probably need to change :(
-        x += Math.ceil(xInc);
-        y += Math.ceil(yInc);
+        // this will probably need to change :(
+        x += Math.ceil(xinc);
+        y += Math.ceil(yinc);
     }
 }
+
 
 
 /**
