@@ -12,7 +12,6 @@ let VIEWPORT_WIDTH = 1;
 let VIEWPORT_HEIGHT = 1;
 let PROJ_PLANE_Z = 1;
 
-console.log(TEST);
 
 /**
  * Mapping a scaled 2D vector to the proper part of the canvas
@@ -29,6 +28,7 @@ function viewportToCanvas(vector2){
 
 /**
  * Mapping R3 -> R2
+ * (Not complete, but so far works with positive depth values)
  */
 function projectVertex(vector3){
     // grabbing functions from input vector3
