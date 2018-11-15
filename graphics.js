@@ -10,21 +10,21 @@ function drawLine(vec2A, vec2B){
     let y2 = vec2B.y;
 
     // difference in x & y
-    var diff_x = x2 - x1;
-    var diff_y = y2 - y1;
-    var slope = diff_x / diff_y;
+    let diff_x = x2 - x1;
+    let diff_y = y2 - y1;
+    let slope = diff_x / diff_y;
 
     // the amount of steps is defined by the longest difference in either the x or y dimension
-    var steps = (Math.abs(diff_x) > Math.abs(diff_y) ? Math.abs(diff_x) : Math.abs(diff_y));
+    let steps = (Math.abs(diff_x) > Math.abs(diff_y) ? Math.abs(diff_x) : Math.abs(diff_y));
 
     // x and y increment
-    var xinc = diff_x / steps;
-    var yinc = diff_y / steps
+    let xinc = diff_x / steps;
+    let yinc = diff_y / steps
 
     // x and y values that are incremented until the line is drawn
-    var x = x1;
-    var y = y1;
-    for(var i=0; i<=steps; i++){
+    let x = x1;
+    let y = y1;
+    for(let i=0; i<=steps; i++){
         // draw the pixel
         putPixel(x, y);
 

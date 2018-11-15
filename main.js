@@ -12,6 +12,7 @@ let VIEWPORT_WIDTH = 1;
 let VIEWPORT_HEIGHT = 1;
 let PROJ_PLANE_Z = 1;
 
+console.log(TEST);
 
 /**
  * Mapping a scaled 2D vector to the proper part of the canvas
@@ -55,16 +56,16 @@ let vCb = new Vector3(-1, 0.5, 6);
 let vDb = new Vector3(-1, -0.5, 6);
 
 drawLine(projectVertex(vA), projectVertex(vB));
-drawLine(projectVertex(vB), projectVertex(vC));
-drawLine(projectVertex(vC), projectVertex(vD));
-drawLine(projectVertex(vD), projectVertex(vA));
-
-drawLine(projectVertex(vAb), projectVertex(vBb));
-drawLine(projectVertex(vBb), projectVertex(vCb));
-drawLine(projectVertex(vCb), projectVertex(vDb));
-drawLine(projectVertex(vDb), projectVertex(vAb));
-
-drawLine(projectVertex(vA), projectVertex(vAb));
-drawLine(projectVertex(vB), projectVertex(vBb));
-drawLine(projectVertex(vC), projectVertex(vCb));
-drawLine(projectVertex(vD), projectVertex(vDb));
+// drawLine(projectVertex(vB), projectVertex(vC));
+// drawLine(projectVertex(vC), projectVertex(vD));
+// drawLine(projectVertex(vD), projectVertex(vA));
+//
+// drawLine(projectVertex(vAb), projectVertex(vBb));
+// drawLine(projectVertex(vBb), projectVertex(vCb));
+// drawLine(projectVertex(vCb), projectVertex(vDb));
+// drawLine(projectVertex(vDb), projectVertex(vAb));
+//
+// drawLine(projectVertex(vA), projectVertex(vAb));
+// drawLine(projectVertex(vB), projectVertex(vBb));
+// drawLine(projectVertex(vC), projectVertex(vCb));
+// drawLine(projectVertex(vD), projectVertex(vDb));
