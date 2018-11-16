@@ -41,7 +41,7 @@ function projectVertex(vector3){
     let v = y * PROJ_PLANE_Z / z;
     let transform_vec = new Vector2(u, v);
 
-    result_vector = viewportToCanvas(transform_vec);
+    let result_vector = viewportToCanvas(transform_vec);
     return result_vector;
 }
 
@@ -55,7 +55,10 @@ let vBb = new Vector3(-2, 0.5, 6);
 let vCb = new Vector3(-1, 0.5, 6);
 let vDb = new Vector3(-1, -0.5, 6);
 
-drawLine(projectVertex(vA), projectVertex(vB));
+let a = projectVertex(vA);
+let b = projectVertex(vB);
+
+drawLine(a, b);
 // drawLine(projectVertex(vB), projectVertex(vC));
 // drawLine(projectVertex(vC), projectVertex(vD));
 // drawLine(projectVertex(vD), projectVertex(vA));
