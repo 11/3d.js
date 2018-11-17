@@ -46,29 +46,27 @@ function projectVertex(vector3){
 }
 
 // all vertexs on a cube
-let vA = new Vector3(-2, -0.5, 5);
-let vB = new Vector3(-2, 0.5, 5);
-let vC = new Vector3(-1, 0.5, 5);
-let vD = new Vector3(-1, -0.5, 5);
+let vA =  new Vector3(-2, -0.5, 5);
+let vB =  new Vector3(-2,  0.5, 5);
+let vC =  new Vector3(-1,  0.5, 5);
+let vD =  new Vector3(-1, -0.5, 5);
 let vAb = new Vector3(-2, -0.5, 6);
-let vBb = new Vector3(-2, 0.5, 6);
-let vCb = new Vector3(-1, 0.5, 6);
+let vBb = new Vector3(-2,  0.5, 6);
+let vCb = new Vector3(-1,  0.5, 6);
 let vDb = new Vector3(-1, -0.5, 6);
 
-let a = projectVertex(vA);
-let b = projectVertex(vB);
 
-drawLine(a, b);
-// drawLine(projectVertex(vB), projectVertex(vC));
-// drawLine(projectVertex(vC), projectVertex(vD));
-// drawLine(projectVertex(vD), projectVertex(vA));
-//
-// drawLine(projectVertex(vAb), projectVertex(vBb));
-// drawLine(projectVertex(vBb), projectVertex(vCb));
-// drawLine(projectVertex(vCb), projectVertex(vDb));
-// drawLine(projectVertex(vDb), projectVertex(vAb));
-//
+drawLine(projectVertex(vA), projectVertex(vB));
+drawLine(projectVertex(vB), projectVertex(vC));
+drawLine(projectVertex(vC), projectVertex(vD));
+drawLine(projectVertex(vD), projectVertex(vA));
+
+drawLine(projectVertex(vAb), projectVertex(vBb));
+drawLine(projectVertex(vBb), projectVertex(vCb));
+drawLine(projectVertex(vCb), projectVertex(vDb));
+drawLine(projectVertex(vDb), projectVertex(vAb));
+
 // drawLine(projectVertex(vA), projectVertex(vAb));
-// drawLine(projectVertex(vB), projectVertex(vBb));
+drawLine(projectVertex(vB), projectVertex(vBb));
 // drawLine(projectVertex(vC), projectVertex(vCb));
 // drawLine(projectVertex(vD), projectVertex(vDb));

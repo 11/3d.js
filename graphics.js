@@ -41,6 +41,9 @@ function drawLine(vec2A, vec2B){
  * Puts pixel in texture buffer at the correct coordinate
  */
 function putPixel(x, y){
+    x = 640/2 + Math.floor(x);
+    y = 640/2 + Math.floor(y);
+
     ctx.beginPath();
     ctx.fillStyle = "white";
     ctx.arc(x, y, 1, 1, 2*Math.PI);
