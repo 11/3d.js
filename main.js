@@ -2,7 +2,7 @@ let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 
 let WIDTH = 640;
-let HEIGHT = 480;
+let HEIGHT = 640;
 
 let ASPECT_RATIO = WIDTH/HEIGHT;
 let FOV = 90.0;
@@ -84,11 +84,11 @@ let fov_radians = 1.0 / Math.tan(FOV * 0.5 / 180.0 * Math.PI);
 let projection_matrix = new Mat4(
     new Vec4(ASPECT_RATIO * fov_radians, 0.0, 0.0, 0.0),
     new Vec4(0.0, fov_radians, 0.0, 0.0),
-    new Vec4(0.0, 0.0, z_far / (z_far - z_near), 1.0),
-    new Vec4(0.0, 0.0, 0.0, 0.0)
+    new Vec4(0.0, 0.0, (z_far) / (z_far - z_near), (-z_far * z_near)/(z_far - z_near)),
+    new Vec4(0.0, 0.0, 1.0, 0.0)
 );
 
-let theta=0.01;
+let theta=0;
 let rotZ = new Mat4(
     new Vec4(Math.cos(theta), Math.sin(theta), 0, 0),
     new Vec4(-Math.sin(theta), Math.cos(theta), 0, 0),
@@ -107,10 +107,12 @@ function multiply(v, mat){
      */
 
     // output vector calculations
-    let x = (v.x * mat.v1.x) + (v.y * mat.v2.x) + (v.z * mat.v3.x) + mat.v4.x;
-    let y = (v.x * mat.v1.y) + (v.y * mat.v2.y) + (v.z * mat.v3.y) + mat.v4.y;
-    let z = (v.x * mat.v1.z) + (v.y * mat.v2.z) + (v.z * mat.v3.z) + mat.v4.z;
-    let w = (v.x * mat.v1.w) + (v.y * mat.v2.w) + (v.z * mat.v3.w) + mat.v4.w;
+    let x = (v.x * mat.v1.x) + (v.y * mat.v1.y) + (v.z * mat.v1.z) + mat.v1.w;
+    let y = (v.x * mat.v2.x) + (v.y * mat.v2.y) + (v.z * mat.v2.z) + mat.v2.w;
+    let z = (v.x * mat.v3.x) + (v.y * mat.v3.y) + (v.z * mat.v3.z) + mat.v3.w;
+
+    // used to scale x y & z
+    let w = (v.x * mat.v4.x) + (v.y * mat.v4.y) + (v.z * mat.v4.z) + mat.v4.w;
 
     // if w is not 0, scale everything by w
     if(w != 0){
@@ -148,7 +150,7 @@ function run(){
     //ctx.clearRect(0,0,canvas.width, canvas.height);
 
     //update
-    theta += 0.01;
+    theta = 100;
 
     //render
     for(let x = 0; x<unit_cube.triangles.length; x++){
@@ -156,9 +158,9 @@ function run(){
         let tri = unit_cube.triangles[x];
 
         // rotate
-        tri.v1 = multiply(tri.v1, rotZ);
-        tri.v2 = multiply(tri.v2, rotZ);
-        tri.v3 = multiply(tri.v3, rotZ);
+        // tri.v1 = multiply(tri.v1, rotZ);
+        // tri.v2 = multiply(tri.v2, rotZ);
+        // tri.v3 = multiply(tri.v3, rotZ);
 
         // translate
         tri.v1.z += 3.0;
@@ -190,20 +192,4 @@ function run(){
 
     //setInterval(run, 10);
 }
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
-run();
 run();
