@@ -1,5 +1,6 @@
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
+ctx.strokeStyle = "#F0F0F0";
 
 let WIDTH = 640;
 let HEIGHT = 640;
@@ -88,7 +89,7 @@ let projection_matrix = new Mat4(
     new Vec4(0.0, 0.0, 1.0, 0.0)
 );
 
-let theta=0;
+var theta=7.2;
 let rotZ = new Mat4(
     new Vec4(Math.cos(theta), Math.sin(theta), 0, 0),
     new Vec4(-Math.sin(theta), Math.cos(theta), 0, 0),
@@ -128,7 +129,6 @@ function multiply(v, mat){
 function drawTriangle(x1, y1, x2, y2, x3, y3){
     ctx.beginPath();
 
-    ctx.strokeStyle = "#F0F0F0";
     //(x1, y1) -> (x2, y2)
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
@@ -147,47 +147,56 @@ function drawTriangle(x1, y1, x2, y2, x3, y3){
 
 function run(){
     //CLEAR PREVIOUS FRAME
-    //ctx.clearRect(0,0,canvas.width, canvas.height);
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#F0F0F0";
 
     //update
 
     //render
     for(let x = 0; x<unit_cube.triangles.length; x++){
 
+        let triRotate    = new Triangle(new Vec3(0,0,0), new Vec3(0,0,0), new Vec3(0,0,0));
+        let triTranslate = new Triangle(new Vec3(0,0,0), new Vec3(0,0,0), new Vec3(0,0,0));
+        let triProject   = new Triangle(new Vec3(0,0,0), new Vec3(0,0,0), new Vec3(0,0,0));
+
         let tri = unit_cube.triangles[x];
 
-        // translate
-        tri.v1.z += 3.0;
-        tri.v2.z += 3.0;
-        tri.v3.z += 3.0;
+        // rotate
+        triRotate.v1 = multiply(tri.v1, rotZ);
+        triRotate.v2 = multiply(tri.v2, rotZ);
+        triRotate.v3 = multiply(tri.v3, rotZ);
 
-        tri.v1.x -= 1.0;
-        tri.v2.x -= 1.0;
-        tri.v3.x -= 1.0;
+        // translate
+        triTranslate.v1.z = triRotate.v1.z + 2.0;
+        triTranslate.v2.z = triRotate.v1.z + 2.0;
+        triTranslate.v3.z = triRotate.v1.z + 2.0;
 
         //project triangles
-        tri.v1 = multiply(tri.v1, projection_matrix);
-        tri.v2 = multiply(tri.v2, projection_matrix);
-        tri.v3 = multiply(tri.v3, projection_matrix);
+        triProject.v1 = multiply(triTranslate.v1, projection_matrix);
+        triProject.v2 = multiply(triTranslate.v2, projection_matrix);
+        triProject.v3 = multiply(triTranslate.v3, projection_matrix);
 
         // scale into view
-        tri.v1.x += 1.0; tri.v1.y += 1.0;
-        tri.v2.x += 1.0; tri.v2.y += 1.0;
-        tri.v3.x += 1.0; tri.v3.y += 1.0;
+        triProject.v1.x += 1.0; triProject.v1.y += 1.0;
+        triProject.v2.x += 1.0; triProject.v2.y += 1.0;
+        triProject.v3.x += 1.0; triProject.v3.y += 1.0;
 
-        tri.v1.x *= 0.5 * WIDTH;
-        tri.v1.y *= 0.5 * HEIGHT;
-        tri.v2.x *= 0.5 * WIDTH;
-        tri.v2.y *= 0.5 * HEIGHT;
-        tri.v3.x *= 0.5 * WIDTH;
-        tri.v3.y *= 0.5 * HEIGHT;
+        triProject.v1.x *= 0.5 * WIDTH;
+        triProject.v1.y *= 0.5 * HEIGHT;
+        triProject.v2.x *= 0.5 * WIDTH;
+        triProject.v2.y *= 0.5 * HEIGHT;
+        triProject.v3.x *= 0.5 * WIDTH;
+        triProject.v3.y *= 0.5 * HEIGHT;
 
         //draw triangles
-        drawTriangle(tri.v1.x, tri.v1.y,
-            tri.v2.x, tri.v2.y,
-            tri.v3.x, tri.v3.y);
+        drawTriangle(triProject.v1.x, triProject.v1.y,
+            triProject.v2.x, triProject.v2.y,
+            triProject.v3.x, triProject.v3.y);
     }
 
-    // setInterval(run, 10);
+    window.requestAnimationFrame(run);
 }
+
+//window.requestAnimationFrame(run);
 run();
+//ctx.clearRect(0, 0, canvas.width, canvas.height);
