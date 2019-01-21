@@ -89,13 +89,32 @@ let projection_matrix = new Mat4(
     new Vec4(0.0, 0.0, 1.0, 0.0)
 );
 
-var theta=7.2;
+var theta=12;
 let rotZ = new Mat4(
     new Vec4(Math.cos(theta), Math.sin(theta), 0, 0),
     new Vec4(-Math.sin(theta), Math.cos(theta), 0, 0),
     new Vec4(0, 0, 1, 0),
     new Vec4(0, 0, 0, 1)
 );
+
+let rotX = new Mat4(
+    new Vec4(1, 0, 0, 0,),
+    new Vec4(0, Math.cos(theta), Math.sin(theta), 0),
+    new Vec4(0, -Math.sin(theta), Math.cos(theta), 0),
+    new Vec4(0, 0, 0, 1)
+);
+
+function rotate(theta){
+    rotZ.v1.x = Math.cos(theta);
+    rotZ.v1.y = Math.sin(theta);
+    rotZ.v2.x = -Math.sin(theta);
+    rotZ.v2.y = Math.cos(theta);
+
+    rotX.v2.y = Math.cos(theta);
+    rotX.v2.z = Math.sin(theta);
+    rotX.v3.y = -Math.sin(theta);
+    rotX.v3.z = Math.cos(theta);
+}
 
 function multiply(v, mat){
 
@@ -147,11 +166,12 @@ function drawTriangle(x1, y1, x2, y2, x3, y3){
 
 function run(){
     //CLEAR PREVIOUS FRAME
-    //ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#F0F0F0";
 
     //update
-
+    theta += 0.0001;
+    rotate(theta);
     //render
     for(let x = 0; x<unit_cube.triangles.length; x++){
 
@@ -166,10 +186,17 @@ function run(){
         triRotate.v2 = multiply(tri.v2, rotZ);
         triRotate.v3 = multiply(tri.v3, rotZ);
 
+        triRotate.v1 = multiply(triRotate.v1, rotX);
+        triRotate.v2 = multiply(triRotate.v2, rotX);
+        triRotate.v3 = multiply(triRotate.v3, rotX);
+
         // translate
+        triTranslate.v1 = triRotate.v1;
+        triTranslate.v2 = triRotate.v2;
+        triTranslate.v3 = triRotate.v3;
         triTranslate.v1.z = triRotate.v1.z + 2.0;
-        triTranslate.v2.z = triRotate.v1.z + 2.0;
-        triTranslate.v3.z = triRotate.v1.z + 2.0;
+        triTranslate.v2.z = triRotate.v2.z + 2.0;
+        triTranslate.v3.z = triRotate.v3.z + 2.0;
 
         //project triangles
         triProject.v1 = multiply(triTranslate.v1, projection_matrix);
@@ -180,7 +207,6 @@ function run(){
         triProject.v1.x += 1.0; triProject.v1.y += 1.0;
         triProject.v2.x += 1.0; triProject.v2.y += 1.0;
         triProject.v3.x += 1.0; triProject.v3.y += 1.0;
-
         triProject.v1.x *= 0.5 * WIDTH;
         triProject.v1.y *= 0.5 * HEIGHT;
         triProject.v2.x *= 0.5 * WIDTH;
@@ -194,9 +220,6 @@ function run(){
             triProject.v3.x, triProject.v3.y);
     }
 
-    window.requestAnimationFrame(run);
+    setInterval(run, 1);
 }
-
-//window.requestAnimationFrame(run);
 run();
-//ctx.clearRect(0, 0, canvas.width, canvas.height);
