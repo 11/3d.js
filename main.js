@@ -98,7 +98,7 @@ let rotZ = new Mat4(
 
 function multiply(v, mat){
 
-    /*
+    /** Matrix Ledger
      *     v1      v2     v3     v4
      * x [(0,0), (0,1), (0,2), (0,3)]
      * y [(1,0), (1,1), (1,2), (1,3)]
@@ -138,7 +138,7 @@ function drawTriangle(x1, y1, x2, y2, x3, y3){
     ctx.lineTo(x3, y3);
 
     //(x3, y3) -> (x1, y1)
-    ctx.moveTo(x3, y1);
+    ctx.moveTo(x3, y3);
     ctx.lineTo(x1, y1);
 
     ctx.stroke();
@@ -150,22 +150,20 @@ function run(){
     //ctx.clearRect(0,0,canvas.width, canvas.height);
 
     //update
-    theta = 100;
 
     //render
     for(let x = 0; x<unit_cube.triangles.length; x++){
 
         let tri = unit_cube.triangles[x];
 
-        // rotate
-        // tri.v1 = multiply(tri.v1, rotZ);
-        // tri.v2 = multiply(tri.v2, rotZ);
-        // tri.v3 = multiply(tri.v3, rotZ);
-
         // translate
         tri.v1.z += 3.0;
         tri.v2.z += 3.0;
         tri.v3.z += 3.0;
+
+        tri.v1.x -= 1.0;
+        tri.v2.x -= 1.0;
+        tri.v3.x -= 1.0;
 
         //project triangles
         tri.v1 = multiply(tri.v1, projection_matrix);
@@ -190,6 +188,6 @@ function run(){
             tri.v3.x, tri.v3.y);
     }
 
-    //setInterval(run, 10);
+    // setInterval(run, 10);
 }
 run();
