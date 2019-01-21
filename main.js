@@ -1,72 +1,209 @@
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 
-let WIDTH = canvas.width;
-let HEIGHT = canvas.height;
+let WIDTH = 640;
+let HEIGHT = 480;
 
-/**
- * This is temporary, but we're assuming that the viewport
- * of our program is inside a (1,1,1) cube
- */
-let VIEWPORT_WIDTH = 1;
-let VIEWPORT_HEIGHT = 1;
-let PROJ_PLANE_Z = 1;
+let ASPECT_RATIO = WIDTH/HEIGHT;
+let FOV = 90.0;
 
 
-/**
- * Mapping a scaled 2D vector to the proper part of the canvas
- */
-function viewportToCanvas(vector2){
-    let x = vector2.x;
-    let y = vector2.y;
+class Vec4{
 
-    let u = x * WIDTH / VIEWPORT_WIDTH;
-    let v = y * HEIGHT / VIEWPORT_HEIGHT;
-
-    return new Vector2(u, v);
+    constructor(x, y, z, w){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+    }
+}
+class Mat4{
+    constructor(v1, v2, v3, v4){
+        this.v1 = v1;
+        this.v2 = v2;
+        this.v3 = v3;
+        this.v4 = v4;
+    }
 }
 
-/**
- * Mapping R3 -> R2
- * (Not complete, but so far works with positive depth values)
- */
-function projectVertex(vector3){
-    // grabbing functions from input vector3
-    let x = vector3.x;
-    let y = vector3.y;
-    let z = vector3.z;
-
-    // transform from 3D to 2D (scaling by z)
-    let u = x * PROJ_PLANE_Z / z;
-    let v = y * PROJ_PLANE_Z / z;
-    let transform_vec = new Vector2(u, v);
-
-    let result_vector = viewportToCanvas(transform_vec);
-    return result_vector;
+class Vec3{
+    constructor(x, y, z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 }
 
-// all vertexs on a cube
-let vA =  new Vector3(-2, -0.5, 5);
-let vB =  new Vector3(-2,  0.5, 5);
-let vC =  new Vector3(-1,  0.5, 5);
-let vD =  new Vector3(-1, -0.5, 5);
-let vAb = new Vector3(-2, -0.5, 6);
-let vBb = new Vector3(-2,  0.5, 6);
-let vCb = new Vector3(-1,  0.5, 6);
-let vDb = new Vector3(-1, -0.5, 6);
+class Triangle{
+    constructor(v1, v2, v3){
+        this.v1 = v1;
+        this.v2 = v2;
+        this.v3 = v3;
+    }
+}
+
+class Mesh{
+    constructor(triangles){
+        this.triangles = triangles;
+    }
+}
 
 
-drawLine(projectVertex(vA), projectVertex(vB));
-drawLine(projectVertex(vB), projectVertex(vC));
-drawLine(projectVertex(vC), projectVertex(vD));
-drawLine(projectVertex(vD), projectVertex(vA));
 
-drawLine(projectVertex(vAb), projectVertex(vBb));
-drawLine(projectVertex(vBb), projectVertex(vCb));
-drawLine(projectVertex(vCb), projectVertex(vDb));
-drawLine(projectVertex(vDb), projectVertex(vAb));
+let unit_cube = new Mesh([
+    // back face
+    new Triangle(new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(1, 1, 0)),
+    new Triangle(new Vec3(0, 0, 0), new Vec3(1, 1, 0), new Vec3(1, 0, 0)),
 
-// drawLine(projectVertex(vA), projectVertex(vAb));
-drawLine(projectVertex(vB), projectVertex(vBb));
-// drawLine(projectVertex(vC), projectVertex(vCb));
-// drawLine(projectVertex(vD), projectVertex(vDb));
+    // right face
+    new Triangle(new Vec3(1, 0, 0), new Vec3(1, 1, 0), new Vec3(1, 1, 1)),
+    new Triangle(new Vec3(1, 0, 0), new Vec3(1, 1, 1), new Vec3(1, 0, 1)),
+
+    // front face
+    new Triangle(new Vec3(1, 0, 1), new Vec3(1, 1, 1), new Vec3(0, 1, 1)),
+    new Triangle(new Vec3(1, 0, 1), new Vec3(0, 1, 1), new Vec3(0, 0, 1)),
+
+    // left face
+    new Triangle(new Vec3(0, 0, 1), new Vec3(0, 1, 1), new Vec3(0, 1, 0)),
+    new Triangle(new Vec3(0, 0, 1), new Vec3(0, 1, 1), new Vec3(0, 0, 1)),
+
+    // top face
+    new Triangle(new Vec3(0, 1, 0), new Vec3(0, 1, 1), new Vec3(1, 1, 1)),
+    new Triangle(new Vec3(0, 1, 0), new Vec3(1, 1, 1), new Vec3(1, 1, 0)),
+
+    // bottom face
+    new Triangle(new Vec3(1, 0, 1), new Vec3(0, 0, 1), new Vec3(0, 0, 0)),
+    new Triangle(new Vec3(1, 0, 1), new Vec3(0, 0, 0), new Vec3(1, 0, 0)),
+]);
+
+
+//projection matrix
+let z_near = 0.1;
+let z_far = 1000.0;
+let fov_radians = 1.0 / Math.tan(FOV * 0.5 / 180.0 * Math.PI);
+let projection_matrix = new Mat4(
+    new Vec4(ASPECT_RATIO * fov_radians, 0.0, 0.0, 0.0),
+    new Vec4(0.0, fov_radians, 0.0, 0.0),
+    new Vec4(0.0, 0.0, z_far / (z_far - z_near), 1.0),
+    new Vec4(0.0, 0.0, 0.0, 0.0)
+);
+
+let theta=0.01;
+let rotZ = new Mat4(
+    new Vec4(Math.cos(theta), Math.sin(theta), 0, 0),
+    new Vec4(-Math.sin(theta), Math.cos(theta), 0, 0),
+    new Vec4(0, 0, 1, 0),
+    new Vec4(0, 0, 0, 1)
+);
+
+function multiply(v, mat){
+
+    /*
+     *     v1      v2     v3     v4
+     * x [(0,0), (0,1), (0,2), (0,3)]
+     * y [(1,0), (1,1), (1,2), (1,3)]
+     * z [(2,0), (2,1), (2,2), (2,3)]
+     * w [(3,0), (3,1), (3,2), (3,3)]
+     */
+
+    // output vector calculations
+    let x = (v.x * mat.v1.x) + (v.y * mat.v2.x) + (v.z * mat.v3.x) + mat.v4.x;
+    let y = (v.x * mat.v1.y) + (v.y * mat.v2.y) + (v.z * mat.v3.y) + mat.v4.y;
+    let z = (v.x * mat.v1.z) + (v.y * mat.v2.z) + (v.z * mat.v3.z) + mat.v4.z;
+    let w = (v.x * mat.v1.w) + (v.y * mat.v2.w) + (v.z * mat.v3.w) + mat.v4.w;
+
+    // if w is not 0, scale everything by w
+    if(w != 0){
+        x /= w;
+        y /= w;
+        z /= w;
+    }
+
+    return new Vec3(x, y, z);
+}
+
+
+function drawTriangle(x1, y1, x2, y2, x3, y3){
+    ctx.beginPath();
+
+    ctx.strokeStyle = "#F0F0F0";
+    //(x1, y1) -> (x2, y2)
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+
+    //(x2, y2) -> (x3, y3)
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x3, y3);
+
+    //(x3, y3) -> (x1, y1)
+    ctx.moveTo(x3, y1);
+    ctx.lineTo(x1, y1);
+
+    ctx.stroke();
+}
+
+
+function run(){
+    //CLEAR PREVIOUS FRAME
+    //ctx.clearRect(0,0,canvas.width, canvas.height);
+
+    //update
+    theta += 0.01;
+
+    //render
+    for(let x = 0; x<unit_cube.triangles.length; x++){
+
+        let tri = unit_cube.triangles[x];
+
+        // rotate
+        tri.v1 = multiply(tri.v1, rotZ);
+        tri.v2 = multiply(tri.v2, rotZ);
+        tri.v3 = multiply(tri.v3, rotZ);
+
+        // translate
+        tri.v1.z += 3.0;
+        tri.v2.z += 3.0;
+        tri.v3.z += 3.0;
+
+        //project triangles
+        tri.v1 = multiply(tri.v1, projection_matrix);
+        tri.v2 = multiply(tri.v2, projection_matrix);
+        tri.v3 = multiply(tri.v3, projection_matrix);
+
+        // scale into view
+        tri.v1.x += 1.0; tri.v1.y += 1.0;
+        tri.v2.x += 1.0; tri.v2.y += 1.0;
+        tri.v3.x += 1.0; tri.v3.y += 1.0;
+
+        tri.v1.x *= 0.5 * WIDTH;
+        tri.v1.y *= 0.5 * HEIGHT;
+        tri.v2.x *= 0.5 * WIDTH;
+        tri.v2.y *= 0.5 * HEIGHT;
+        tri.v3.x *= 0.5 * WIDTH;
+        tri.v3.y *= 0.5 * HEIGHT;
+
+        //draw triangles
+        drawTriangle(tri.v1.x, tri.v1.y,
+            tri.v2.x, tri.v2.y,
+            tri.v3.x, tri.v3.y);
+    }
+
+    //setInterval(run, 10);
+}
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
+run();
