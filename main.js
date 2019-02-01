@@ -77,6 +77,7 @@ let unit_cube = new Mesh([
     new Triangle(new Vec3(1, 0, 1), new Vec3(0, 0, 0), new Vec3(1, 0, 0)),
 ]);
 
+let camera = new Vec3(0,0,0);
 
 //projection matrix
 let z_near = 0.1;
@@ -104,12 +105,23 @@ let rotX = new Mat4(
     new Vec4(0, 0, 0, 1)
 );
 
+function crossProduct(v1, v2){
+   let x = (v1.y * v2.z) - (v1.z * v2.y);
+   let y = (v1.z * v2.x) - (v1.x * v2.z);
+   let z = (v1.x * v2.y) - (v1.y - v2.x);
+
+   return Vec3(x, y, z);
+}
+
 function rotate(theta){
+
+    // update rotate Z matrix
     rotZ.v1.x = Math.cos(theta);
     rotZ.v1.y = Math.sin(theta);
     rotZ.v2.x = -Math.sin(theta);
     rotZ.v2.y = Math.cos(theta);
 
+    // update rotate X matrix
     rotX.v2.y = Math.cos(theta);
     rotX.v2.z = Math.sin(theta);
     rotX.v3.y = -Math.sin(theta);
@@ -165,14 +177,15 @@ function drawTriangle(x1, y1, x2, y2, x3, y3){
 
 
 function run(){
-    //CLEAR PREVIOUS FRAME
+    // clear previous frame
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#F0F0F0";
 
-    //update
-    theta += 0.0001;
+    // update
+    theta += 0.000009;
     rotate(theta);
-    //render
+
+    // render
     for(let x = 0; x<unit_cube.triangles.length; x++){
 
         let triRotate    = new Triangle(new Vec3(0,0,0), new Vec3(0,0,0), new Vec3(0,0,0));
@@ -198,27 +211,52 @@ function run(){
         triTranslate.v2.z = triRotate.v2.z + 2.0;
         triTranslate.v3.z = triRotate.v3.z + 2.0;
 
-        //project triangles
-        triProject.v1 = multiply(triTranslate.v1, projection_matrix);
-        triProject.v2 = multiply(triTranslate.v2, projection_matrix);
-        triProject.v3 = multiply(triTranslate.v3, projection_matrix);
+        // calculate the normal of all triangles
+        let line1 = new Vec3(0,0,0);
+        let line2 = new Vec3(0,0,0);
+        line1.x = triTranslate.v2.x - triTranslate.v1.x;
+        line1.y = triTranslate.v2.y - triTranslate.v1.y;
+        line1.z = triTranslate.v2.z - triTranslate.v1.z;
 
-        // scale into view
-        triProject.v1.x += 1.0; triProject.v1.y += 1.0;
-        triProject.v2.x += 1.0; triProject.v2.y += 1.0;
-        triProject.v3.x += 1.0; triProject.v3.y += 1.0;
-        triProject.v1.x *= 0.5 * WIDTH;
-        triProject.v1.y *= 0.5 * HEIGHT;
-        triProject.v2.x *= 0.5 * WIDTH;
-        triProject.v2.y *= 0.5 * HEIGHT;
-        triProject.v3.x *= 0.5 * WIDTH;
-        triProject.v3.y *= 0.5 * HEIGHT;
+        line2.x = triTranslate.v3.x - triTranslate.v1.x;
+        line2.y = triTranslate.v3.y - triTranslate.v1.y;
+        line2.z = triTranslate.v3.z - triTranslate.v1.z;
 
-        //draw triangles
-        drawTriangle(triProject.v1.x, triProject.v1.y,
-            triProject.v2.x, triProject.v2.y,
-            triProject.v3.x, triProject.v3.y);
+        let normal = new Vec3(0,0,0);
+        normal.x = (line1.y * line2.z) - (line1.z * line2.y);
+        normal.y = (line1.z * line2.x) - (line1.x * line2.z);
+        normal.z = (line1.x * line2.y) - (line1.y * line2.x);
+
+        let normal_length = Math.sqrt((normal.x*normal.x) + (normal.y*normal.y) + (normal.z*normal.z));
+        normal.x /= normal_length; normal.y /= normal_length; normal.z /= normal_length;
+
+        //only render a side when the side's normal is less than 0
+        if(normal.x * (triTranslate.v1.x - camera.x) +
+            normal.y * (triTranslate.v1.y - camera.y) +
+            normal.z * (triTranslate.v1.z - camera.z) < 0){
+            //project triangles
+            triProject.v1 = multiply(triTranslate.v1, projection_matrix);
+            triProject.v2 = multiply(triTranslate.v2, projection_matrix);
+            triProject.v3 = multiply(triTranslate.v3, projection_matrix);
+
+            // scale into view
+            triProject.v1.x += 1.0; triProject.v1.y += 1.0;
+            triProject.v2.x += 1.0; triProject.v2.y += 1.0;
+            triProject.v3.x += 1.0; triProject.v3.y += 1.0;
+            triProject.v1.x *= 0.5 * WIDTH;
+            triProject.v1.y *= 0.5 * HEIGHT;
+            triProject.v2.x *= 0.5 * WIDTH;
+            triProject.v2.y *= 0.5 * HEIGHT;
+            triProject.v3.x *= 0.5 * WIDTH;
+            triProject.v3.y *= 0.5 * HEIGHT;
+
+            //draw triangles
+            drawTriangle(triProject.v1.x, triProject.v1.y,
+                triProject.v2.x, triProject.v2.y,
+                triProject.v3.x, triProject.v3.y);
+        }
     }
+
 
     setInterval(run, 1);
 }
